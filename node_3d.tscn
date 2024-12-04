@@ -1,0 +1,142 @@
+[gd_scene load_steps=18 format=3 uid="uid://dx3bh7q5x4xp3"]
+
+[ext_resource type="Script" path="res://node_3d.gd" id="1_8d8ur"]
+[ext_resource type="Texture2D" uid="uid://btffvdop70j2q" path="res://Resources/Materials/Building.png" id="2_1w06v"]
+[ext_resource type="AudioStream" uid="uid://bu7qfcbtwmg6q" path="res://Resources/Audio/Crowd.mp3" id="4_4y05e"]
+[ext_resource type="AudioStream" uid="uid://drtve5gir48i3" path="res://Resources/Audio/Traffic.mp3" id="5_4cldw"]
+[ext_resource type="Script" path="res://Scripts/Player.gd" id="5_xwi86"]
+[ext_resource type="AudioStream" uid="uid://c3tra7i6ibrj1" path="res://Resources/Audio/Empty Streets.wav" id="6_ahod2"]
+
+[sub_resource type="ProceduralSkyMaterial" id="ProceduralSkyMaterial_8gu5b"]
+sky_horizon_color = Color(0.64625, 0.65575, 0.67075, 1)
+ground_horizon_color = Color(0.64625, 0.65575, 0.67075, 1)
+
+[sub_resource type="Sky" id="Sky_faadn"]
+sky_material = SubResource("ProceduralSkyMaterial_8gu5b")
+
+[sub_resource type="Environment" id="Environment_s0klm"]
+background_mode = 2
+sky = SubResource("Sky_faadn")
+tonemap_mode = 2
+glow_enabled = true
+volumetric_fog_enabled = true
+volumetric_fog_ambient_inject = 0.23
+
+[sub_resource type="GDScript" id="GDScript_vnxjp"]
+script/source = "extends Label
+
+func _process(delta: float) -> void:
+	text = \"FPS: \" + str(Engine.get_frames_per_second())
+"
+
+[sub_resource type="NavigationMesh" id="NavigationMesh_yvw3h"]
+vertices = PackedVector3Array(-63.5, 0.02, -63.5, -63.5, 0.02, 63.5, 63.5, 0.02, 63.5, 63.5, 0.02, -63.5)
+polygons = [PackedInt32Array(3, 2, 0), PackedInt32Array(0, 2, 1)]
+cell_height = 0.01
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_v1lql"]
+albedo_texture = ExtResource("2_1w06v")
+uv1_scale = Vector3(4, 4, 4)
+texture_filter = 0
+
+[sub_resource type="CompressedTexture2D" id="CompressedTexture2D_rrabs"]
+load_path = "res://.godot/imported/icon.svg-218a8f2b3041327d8a5756f3a245f83b.s3tc.ctex"
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_fq7ev"]
+albedo_texture = SubResource("CompressedTexture2D_rrabs")
+uv1_scale = Vector3(128, 128, 128)
+texture_filter = 0
+
+[sub_resource type="PlaneMesh" id="PlaneMesh_icjat"]
+material = SubResource("StandardMaterial3D_fq7ev")
+size = Vector2(128, 128)
+
+[sub_resource type="CylinderShape3D" id="CylinderShape3D_qj1li"]
+
+[sub_resource type="FogMaterial" id="FogMaterial_ljl5b"]
+density = 8.0
+
+[node name="Level" type="Node"]
+script = ExtResource("1_8d8ur")
+
+[node name="WorldEnvironment" type="WorldEnvironment" parent="."]
+environment = SubResource("Environment_s0klm")
+
+[node name="Control" type="Control" parent="."]
+layout_mode = 3
+anchors_preset = 0
+offset_right = 640.0
+offset_bottom = 360.0
+
+[node name="Label" type="Label" parent="Control"]
+layout_mode = 0
+offset_right = 128.0
+offset_bottom = 64.0
+text = "FPS: "
+script = SubResource("GDScript_vnxjp")
+
+[node name="Region" type="NavigationRegion3D" parent="."]
+navigation_mesh = SubResource("NavigationMesh_yvw3h")
+
+[node name="CSGBox3D" type="CSGBox3D" parent="Region"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 32, -64)
+size = Vector3(128, 64, 1)
+material = SubResource("StandardMaterial3D_v1lql")
+
+[node name="CSGBox3D2" type="CSGBox3D" parent="Region"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 32, 64)
+size = Vector3(128, 64, 1)
+material = SubResource("StandardMaterial3D_v1lql")
+
+[node name="CSGBox3D3" type="CSGBox3D" parent="Region"]
+transform = Transform3D(0, 0, -1, 0, 1, 0, 1, 0, 0, -64, 32, 7.56979e-06)
+size = Vector3(128, 64, 1)
+material = SubResource("StandardMaterial3D_v1lql")
+
+[node name="Floor" type="CSGMesh3D" parent="Region"]
+use_collision = true
+mesh = SubResource("PlaneMesh_icjat")
+
+[node name="Player" type="CharacterBody3D" parent="." groups=["Player"]]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1, 4)
+axis_lock_angular_x = true
+axis_lock_angular_y = true
+axis_lock_angular_z = true
+script = ExtResource("5_xwi86")
+metadata/_edit_group_ = true
+
+[node name="Camera" type="Camera3D" parent="Player"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 2, 0)
+current = true
+fov = 90.0
+
+[node name="Collider" type="CollisionShape3D" parent="Player"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1, 0)
+shape = SubResource("CylinderShape3D_qj1li")
+
+[node name="Obstacle" type="NavigationObstacle3D" parent="Player"]
+radius = 1.0
+
+[node name="Crowd" type="AudioStreamPlayer" parent="."]
+stream = ExtResource("4_4y05e")
+autoplay = true
+
+[node name="Traffic" type="AudioStreamPlayer" parent="."]
+stream = ExtResource("5_4cldw")
+volume_db = -16.0
+autoplay = true
+
+[node name="Music" type="AudioStreamPlayer" parent="."]
+stream = ExtResource("6_ahod2")
+volume_db = -8.0
+autoplay = true
+
+[node name="FogVolume" type="FogVolume" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 41, 0)
+size = Vector3(128, 2, 128)
+material = SubResource("FogMaterial_ljl5b")
+
+[node name="FogVolume2" type="FogVolume" parent="."]
+transform = Transform3D(-4.37114e-08, 1, 0, -1, -4.37114e-08, 0, 0, 0, 1, 53, 41, 0)
+size = Vector3(128, 2, 128)
+material = SubResource("FogMaterial_ljl5b")

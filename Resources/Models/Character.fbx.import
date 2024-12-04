@@ -1,0 +1,64 @@
+[remap]
+
+importer="scene"
+importer_version=1
+type="PackedScene"
+uid="uid://cg2pqscqh6vxf"
+path="res://.godot/imported/Character.fbx-58cdf9e680137ba214ebb2e3e3e9f7c0.scn"
+
+[deps]
+
+source_file="res://Resources/Models/Character.fbx"
+dest_files=["res://.godot/imported/Character.fbx-58cdf9e680137ba214ebb2e3e3e9f7c0.scn"]
+
+[params]
+
+nodes/root_type="AnimatableBody3D"
+nodes/root_name="Character"
+nodes/apply_root_scale=true
+nodes/root_scale=1.0
+nodes/import_as_skeleton_bones=false
+meshes/ensure_tangents=true
+meshes/generate_lods=true
+meshes/create_shadow_meshes=true
+meshes/light_baking=1
+meshes/lightmap_texel_size=0.2
+meshes/force_disable_compression=false
+skins/use_named_skins=false
+animation/import=false
+animation/fps=1.0
+animation/trimming=false
+animation/remove_immutable_tracks=false
+animation/import_rest_as_RESET=false
+import_script/path=""
+_subresources={
+"materials": {
+"skin": {
+"use_external/enabled": true,
+"use_external/path": "res://Resources/Materials/Character.material"
+}
+},
+"meshes": {
+"characterLargeMale": {
+"generate/lightmap_uv": 0,
+"generate/lods": 1,
+"generate/shadow_meshes": 0,
+"lods/normal_merge_angle": 60.0,
+"lods/normal_split_angle": 15.0,
+"save_to_file/enabled": true,
+"save_to_file/path": "res://Resources/Models/Character.res"
+}
+},
+"nodes": {
+"PATH:Root/Skeleton3D": {
+"rest_pose/external_animation_library": null
+},
+"PATH:Root/Skeleton3D/characterLargeMale": {
+"mesh_instance/cast_shadow": 0,
+"occluder/simplification_distance": 1.0
+}
+}
+}
+fbx/importer=0
+fbx/allow_geometry_helper_nodes=false
+fbx/embedded_image_handling=1

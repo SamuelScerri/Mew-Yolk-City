@@ -1,0 +1,77 @@
+[gd_scene load_steps=11 format=3 uid="uid://ce1mvtu7mn1rt"]
+
+[ext_resource type="PackedScene" uid="uid://cg2pqscqh6vxf" path="res://Resources/Models/Character.fbx" id="1_3a815"]
+[ext_resource type="Script" path="res://Scripts/Character.gd" id="2_fkpso"]
+[ext_resource type="Animation" uid="uid://ceps0r4g2qm7o" path="res://Resources/Animations/Idle.res" id="3_1p6oe"]
+[ext_resource type="Animation" uid="uid://bc5ddej28tc20" path="res://Resources/Animations/Walk.res" id="4_6jenh"]
+
+[sub_resource type="PhysicsMaterial" id="PhysicsMaterial_xobg8"]
+friction = 0.0
+
+[sub_resource type="AnimationLibrary" id="AnimationLibrary_duy8d"]
+_data = {
+"Idle": ExtResource("3_1p6oe"),
+"Walk": ExtResource("4_6jenh")
+}
+
+[sub_resource type="AnimationNodeAnimation" id="AnimationNodeAnimation_4856w"]
+animation = &"Character/Idle"
+
+[sub_resource type="AnimationNodeAnimation" id="AnimationNodeAnimation_s7cpd"]
+animation = &"Character/Walk"
+
+[sub_resource type="AnimationNodeBlendSpace1D" id="AnimationNodeBlendSpace1D_58pel"]
+blend_point_0/node = SubResource("AnimationNodeAnimation_4856w")
+blend_point_0/pos = 0.0
+blend_point_1/node = SubResource("AnimationNodeAnimation_s7cpd")
+blend_point_1/pos = 1.0
+sync = true
+
+[sub_resource type="CylinderShape3D" id="CylinderShape3D_mq8vr"]
+
+[node name="Character" type="RigidBody3D" groups=["Character", "Visible"]]
+axis_lock_angular_x = true
+axis_lock_angular_y = true
+axis_lock_angular_z = true
+mass = 0.008
+physics_material_override = SubResource("PhysicsMaterial_xobg8")
+center_of_mass_mode = 1
+can_sleep = false
+script = ExtResource("2_fkpso")
+
+[node name="Character" parent="." instance=ExtResource("1_3a815")]
+
+[node name="Animator" type="AnimationPlayer" parent="Character"]
+deterministic = true
+callback_mode_process = 2
+libraries = {
+"Character": SubResource("AnimationLibrary_duy8d")
+}
+autoplay = "Character/Idle"
+
+[node name="Tree" type="AnimationTree" parent="Character"]
+active = false
+audio_max_polyphony = 1
+tree_root = SubResource("AnimationNodeBlendSpace1D_58pel")
+anim_player = NodePath("../Animator")
+parameters/blend_position = 0.0
+
+[node name="Collider" type="CollisionShape3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1, 0)
+shape = SubResource("CylinderShape3D_mq8vr")
+
+[node name="Visibility" type="VisibleOnScreenEnabler3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1, 0)
+enable_node_path = NodePath("../Character")
+
+[node name="Navigator" type="NavigationAgent3D" parent="."]
+avoidance_enabled = true
+radius = 1.0
+neighbor_distance = 10000.0
+time_horizon_agents = 10.0
+time_horizon_obstacles = 10.0
+max_speed = 10000.0
+
+[connection signal="screen_entered" from="Visibility" to="." method="_on_visibility_screen_entered"]
+[connection signal="screen_exited" from="Visibility" to="." method="_on_visibility_screen_exited"]
+[connection signal="velocity_computed" from="Navigator" to="." method="_on_navigator_velocity_computed"]

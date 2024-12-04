@@ -1,0 +1,6 @@
+[gd_scene load_steps=2 format=3 uid="uid://b2j4wv61dahqs"]
+
+[ext_resource type="Script" path="res://Globals/Scripts/Configurator.gd" id="1_eoq7f"]
+
+[node name="Configurator" type="Node"]
+script = ExtResource("1_eoq7f")
