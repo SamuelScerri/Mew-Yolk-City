@@ -32,7 +32,7 @@ func _process(delta: float) -> void:
 		if input_dir.length() > 0:
 			Input.start_joy_vibration(0, .25, 0, bob_strength * .06215)
 	
-	camera.global_position = previous_position.lerp(global_position, Engine.get_physics_interpolation_fraction()) + Vector3.UP * (1.5 + bob)
+	camera.global_position = previous_position.lerp(global_position, Engine.get_physics_interpolation_fraction()) + Vector3.UP * (2.5 + bob)
 	
 	var look_velocity = Input.get_vector("look_left", "look_right", "look_up", "look_down")
 	rotation_velocity = rotation_velocity.lerp(look_velocity * 2, 8 * delta)

@@ -60,6 +60,16 @@ size = Vector2(128, 128)
 
 [sub_resource type="CylinderShape3D" id="CylinderShape3D_qj1li"]
 
+[sub_resource type="Animation" id="Animation_pnlun"]
+length = 0.001
+tracks/0/type = "rotation_3d"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath(".")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = PackedFloat32Array(0, 1, 0, 0, 0, 1)
+
 [sub_resource type="Animation" id="Animation_nfkfs"]
 resource_name = "Shoot"
 length = 0.25
@@ -93,16 +103,6 @@ tracks/2/keys = {
 }]
 }
 
-[sub_resource type="Animation" id="Animation_pnlun"]
-length = 0.001
-tracks/0/type = "rotation_3d"
-tracks/0/imported = false
-tracks/0/enabled = true
-tracks/0/path = NodePath(".")
-tracks/0/interp = 1
-tracks/0/loop_wrap = true
-tracks/0/keys = PackedFloat32Array(0, 1, 0, 0, 0, 1)
-
 [sub_resource type="AnimationLibrary" id="AnimationLibrary_oexj3"]
 _data = {
 "RESET": SubResource("Animation_pnlun"),
@@ -127,7 +127,7 @@ alpha_curve = SubResource("CurveTexture_dgsk4")
 
 [sub_resource type="StandardMaterial3D" id="StandardMaterial3D_kjals"]
 transparency = 1
-shading_mode = 2
+shading_mode = 0
 vertex_color_use_as_albedo = true
 albedo_texture = ExtResource("8_01qms")
 texture_filter = 0
@@ -181,7 +181,7 @@ use_collision = true
 mesh = SubResource("PlaneMesh_icjat")
 
 [node name="Player" type="CharacterBody3D" parent="." groups=["Player"]]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1, 4)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 71, 0.1, 0)
 axis_lock_angular_x = true
 axis_lock_angular_y = true
 axis_lock_angular_z = true
@@ -190,6 +190,7 @@ metadata/_edit_group_ = true
 
 [node name="Camera" type="Camera3D" parent="Player"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 2, 0)
+cull_mask = 1048573
 current = true
 fov = 90.0
 
@@ -215,29 +216,34 @@ size = Vector2i(640, 360)
 render_target_update_mode = 4
 script = ExtResource("4_ubq5m")
 
-[node name="Weapon" type="Marker3D" parent="Player/Container/Viewport"]
+[node name="Player" type="Camera3D" parent="Player/Container/Viewport"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 2, 0)
+cull_mask = 2
+current = true
+
+[node name="Weapon" type="Marker3D" parent="Player/Container/Viewport/Player"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.2, -0.35, -0.4)
 
-[node name="Pistol" type="MeshInstance3D" parent="Player/Container/Viewport/Weapon"]
+[node name="Pistol" type="MeshInstance3D" parent="Player/Container/Viewport/Player/Weapon"]
 layers = 2
 mesh = ExtResource("7_k8hgv")
-skeleton = NodePath("../..")
+skeleton = NodePath("../../..")
 script = ExtResource("6_jvmm7")
 
-[node name="Player" type="AnimationPlayer" parent="Player/Container/Viewport/Weapon/Pistol"]
+[node name="Player" type="AnimationPlayer" parent="Player/Container/Viewport/Player/Weapon/Pistol"]
 libraries = {
 "": SubResource("AnimationLibrary_oexj3")
 }
 
-[node name="Timer" type="Timer" parent="Player/Container/Viewport/Weapon/Pistol"]
+[node name="Timer" type="Timer" parent="Player/Container/Viewport/Player/Weapon/Pistol"]
 process_callback = 0
 wait_time = 0.125
 one_shot = true
 
-[node name="Fire" type="AudioStreamPlayer" parent="Player/Container/Viewport/Weapon/Pistol"]
+[node name="Fire" type="AudioStreamPlayer" parent="Player/Container/Viewport/Player/Weapon/Pistol"]
 stream = ExtResource("7_60snj")
 
-[node name="Muzzle" type="GPUParticles3D" parent="Player/Container/Viewport/Weapon/Pistol"]
+[node name="Muzzle" type="GPUParticles3D" parent="Player/Container/Viewport/Player/Weapon/Pistol"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.2, -0.15)
 layers = 2
 emitting = false
@@ -251,8 +257,11 @@ transform_align = 1
 process_material = SubResource("ParticleProcessMaterial_qlobj")
 draw_pass_1 = SubResource("QuadMesh_sokpl")
 
-[node name="Camera" type="Camera3D" parent="Player/Container/Viewport"]
-cull_mask = 2
+[node name="Muzzle" type="OmniLight3D" parent="Player/Container/Viewport/Player/Weapon/Pistol/Muzzle"]
+visible = false
+layers = 3
+light_color = Color(0.752941, 0.752941, 0, 1)
+light_energy = 2.0
 
 [node name="Crosshair" type="Sprite2D" parent="Player/Container"]
 position = Vector2(320, 192)
@@ -286,4 +295,4 @@ material = SubResource("FogMaterial_ljl5b")
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 2)
 mesh = ExtResource("9_2jpgg")
 
-[connection signal="timeout" from="Player/Container/Viewport/Weapon/Pistol/Timer" to="Player/Container/Viewport/Weapon/Pistol" method="_on_timer_timeout"]
+[connection signal="timeout" from="Player/Container/Viewport/Player/Weapon/Pistol/Timer" to="Player/Container/Viewport/Player/Weapon/Pistol" method="_on_timer_timeout"]
