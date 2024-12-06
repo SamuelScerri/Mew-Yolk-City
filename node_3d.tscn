@@ -263,6 +263,11 @@ layers = 3
 light_color = Color(0.752941, 0.752941, 0, 1)
 light_energy = 2.0
 
+[node name="Caster" type="RayCast3D" parent="Player/Container/Viewport/Player"]
+target_position = Vector3(0, 0, -10000)
+collide_with_areas = true
+collide_with_bodies = false
+
 [node name="Crosshair" type="Sprite2D" parent="Player/Container"]
 position = Vector2(320, 192)
 texture = ExtResource("9_qge6k")

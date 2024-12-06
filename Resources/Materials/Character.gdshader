@@ -1,5 +1,6 @@
 shader_type spatial;
 
+instance uniform bool interpolate;
 global uniform float physics_interpolation;
 instance uniform vec3 current_position;
 instance uniform float current_rotation;
@@ -16,7 +17,8 @@ vec2 rotate2D(vec2 v, float a) {
 
 void vertex() {
 	//VERTEX.xz = rotate2D(VERTEX.xz, mix(-current_rotation, 0, physics_interpolation));
-	VERTEX = mix(VERTEX - current_position, VERTEX, physics_interpolation);
+	if (interpolate)
+		VERTEX = mix(VERTEX - current_position, VERTEX, physics_interpolation);
 }
 
 void fragment() {

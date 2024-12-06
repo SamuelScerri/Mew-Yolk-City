@@ -100,7 +100,7 @@ shoot={
 common/physics_ticks_per_second=15
 common/max_physics_steps_per_frame=100
 common/physics_jitter_fix=1.0
-3d/physics_engine="GodotPhysics3D"
+3d/physics_engine="JoltPhysics3D"
 common/enable_object_picking=false
 
 [rendering]

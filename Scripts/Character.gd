@@ -1,5 +1,7 @@
 extends AnimatableBody3D
 
+const simulator = preload("res://Globals/Nodes/Bone Simulator.tscn")
+
 var player: Node3D
 var animate: bool:
 	set(value):
@@ -64,6 +66,7 @@ func reset_speaker_timer():
 	$Speak.start()
 
 func _ready():
+	$Root/Skeleton3D/characterLargeMale.set_instance_shader_parameter("interpolate", true)
 	player = get_tree().get_first_node_in_group("Player")
 	$Root/Skeleton3D/characterLargeMale.set_instance_shader_parameter("color", Color(randf_range(0, 1), randf_range(0, 1), randf_range(0, 1)))
 	
@@ -101,6 +104,18 @@ func _on_navigator_velocity_computed(safe_velocity: Vector3) -> void:
 	
 	$Root/Skeleton3D/characterLargeMale.set_instance_shader_parameter("current_position", global_position - previous_position)
 	$Root/Skeleton3D/characterLargeMale.set_instance_shader_parameter("current_rotation", global_rotation.y - previous_rotation)
+	
+
+func kill():
+	$Root/Skeleton3D/characterLargeMale.set_instance_shader_parameter("interpolate", false)
+	var new_bone_simulator = simulator.instantiate()
+	$Root/Skeleton3D.add_child(new_bone_simulator)
+	$Collider.disabled = true
+	new_bone_simulator.physical_bones_start_simulation()
+	$Root.top_level = true
+	
+	#$"Root/Skeleton3D/Bone Simulator".physical_bones_start_simulation()
+	
 
 func _on_enabler_screen_exited() -> void:
 	animate = false

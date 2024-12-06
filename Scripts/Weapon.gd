@@ -15,7 +15,9 @@ func _physics_process(delta: float) -> void:
 		#Input.start_joy_vibration(0, 0, 1, 1)
 		$Muzzle.restart() 
 		$Muzzle/Muzzle.visible = true
-
+		if $"../../Caster".is_colliding():
+			$"../../Caster".get_collider().hit()
+			#print($"../../Caster".get_collider())
 
 func _on_timer_timeout() -> void:
 	shake = false
