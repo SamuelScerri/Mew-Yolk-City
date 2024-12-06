@@ -1,4 +1,4 @@
-[gd_scene load_steps=20 format=3 uid="uid://dx3bh7q5x4xp3"]
+[gd_scene load_steps=33 format=3 uid="uid://dx3bh7q5x4xp3"]
 
 [ext_resource type="Script" path="res://node_3d.gd" id="1_8d8ur"]
 [ext_resource type="Texture2D" uid="uid://btffvdop70j2q" path="res://Resources/Materials/Building.png" id="2_1w06v"]
@@ -7,7 +7,12 @@
 [ext_resource type="AudioStream" uid="uid://drtve5gir48i3" path="res://Resources/Audio/Traffic.mp3" id="5_4cldw"]
 [ext_resource type="Script" path="res://Scripts/Player.gd" id="5_xwi86"]
 [ext_resource type="AudioStream" uid="uid://c3tra7i6ibrj1" path="res://Resources/Audio/Empty Streets.wav" id="6_ahod2"]
+[ext_resource type="Script" path="res://Scripts/Weapon.gd" id="6_jvmm7"]
+[ext_resource type="AudioStream" uid="uid://i7bjlsp2hofd" path="res://Resources/Audio/Fire.mp3" id="7_60snj"]
 [ext_resource type="ArrayMesh" uid="uid://cr4jfj0y5se7r" path="res://Resources/Models/Weapons/pistol.obj" id="7_k8hgv"]
+[ext_resource type="Texture2D" uid="uid://cuesp0jonetit" path="res://Resources/Materials/Particle.png" id="8_01qms"]
+[ext_resource type="ArrayMesh" uid="uid://b2yeis1oip5ff" path="res://Resources/Models/table-large.obj" id="9_2jpgg"]
+[ext_resource type="Texture2D" uid="uid://s1noa3510ifn" path="res://Resources/Materials/Crosshair.png" id="9_qge6k"]
 
 [sub_resource type="ProceduralSkyMaterial" id="ProceduralSkyMaterial_8gu5b"]
 sky_horizon_color = Color(0.64625, 0.65575, 0.67075, 1)
@@ -54,6 +59,82 @@ material = SubResource("StandardMaterial3D_fq7ev")
 size = Vector2(128, 128)
 
 [sub_resource type="CylinderShape3D" id="CylinderShape3D_qj1li"]
+
+[sub_resource type="Animation" id="Animation_nfkfs"]
+resource_name = "Shoot"
+length = 0.25
+step = 0.0313
+tracks/0/type = "rotation_3d"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath(".")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = PackedFloat32Array(0, 1, 0, 0, 0, 1, 0.03125, 1, 0.258819, 0, 0, 0.965926, 0.125, 1, 0, 0, 0, 1)
+tracks/1/type = "position_3d"
+tracks/1/imported = false
+tracks/1/enabled = true
+tracks/1/path = NodePath(".")
+tracks/1/interp = 1
+tracks/1/loop_wrap = true
+tracks/1/keys = PackedFloat32Array(0, 1, 0, 0, 0, 0.03125, 1, 0, 0, -0.125, 0.25, 1, 0, 0, 0)
+tracks/2/type = "method"
+tracks/2/imported = false
+tracks/2/enabled = true
+tracks/2/path = NodePath("Fire")
+tracks/2/interp = 1
+tracks/2/loop_wrap = true
+tracks/2/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"values": [{
+"args": [0.0],
+"method": &"play"
+}]
+}
+
+[sub_resource type="Animation" id="Animation_pnlun"]
+length = 0.001
+tracks/0/type = "rotation_3d"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath(".")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = PackedFloat32Array(0, 1, 0, 0, 0, 1)
+
+[sub_resource type="AnimationLibrary" id="AnimationLibrary_oexj3"]
+_data = {
+"RESET": SubResource("Animation_pnlun"),
+"Shoot": SubResource("Animation_nfkfs")
+}
+
+[sub_resource type="Curve" id="Curve_xely5"]
+_data = [Vector2(0, 1), 0.0, -1.0, 0, 1, Vector2(1, 0), -1.0, 0.0, 1, 0]
+point_count = 2
+
+[sub_resource type="CurveTexture" id="CurveTexture_dgsk4"]
+curve = SubResource("Curve_xely5")
+
+[sub_resource type="ParticleProcessMaterial" id="ParticleProcessMaterial_qlobj"]
+direction = Vector3(0, 0, -1)
+spread = 15.0
+initial_velocity_min = 0.25
+initial_velocity_max = 0.25
+gravity = Vector3(0, 0, 0)
+color = Color(0.752941, 0.752941, 0, 1)
+alpha_curve = SubResource("CurveTexture_dgsk4")
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_kjals"]
+transparency = 1
+shading_mode = 2
+vertex_color_use_as_albedo = true
+albedo_texture = ExtResource("8_01qms")
+texture_filter = 0
+
+[sub_resource type="QuadMesh" id="QuadMesh_sokpl"]
+material = SubResource("StandardMaterial3D_kjals")
+size = Vector2(0.25, 0.25)
 
 [sub_resource type="FogMaterial" id="FogMaterial_ljl5b"]
 density = 8.0
@@ -134,13 +215,48 @@ size = Vector2i(640, 360)
 render_target_update_mode = 4
 script = ExtResource("4_ubq5m")
 
+[node name="Weapon" type="Marker3D" parent="Player/Container/Viewport"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.2, -0.35, -0.4)
+
+[node name="Pistol" type="MeshInstance3D" parent="Player/Container/Viewport/Weapon"]
+layers = 2
+mesh = ExtResource("7_k8hgv")
+skeleton = NodePath("../..")
+script = ExtResource("6_jvmm7")
+
+[node name="Player" type="AnimationPlayer" parent="Player/Container/Viewport/Weapon/Pistol"]
+libraries = {
+"": SubResource("AnimationLibrary_oexj3")
+}
+
+[node name="Timer" type="Timer" parent="Player/Container/Viewport/Weapon/Pistol"]
+process_callback = 0
+wait_time = 0.125
+one_shot = true
+
+[node name="Fire" type="AudioStreamPlayer" parent="Player/Container/Viewport/Weapon/Pistol"]
+stream = ExtResource("7_60snj")
+
+[node name="Muzzle" type="GPUParticles3D" parent="Player/Container/Viewport/Weapon/Pistol"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.2, -0.15)
+layers = 2
+emitting = false
+lifetime = 2.0
+one_shot = true
+speed_scale = 8.0
+explosiveness = 1.0
+randomness = 1.0
+local_coords = true
+transform_align = 1
+process_material = SubResource("ParticleProcessMaterial_qlobj")
+draw_pass_1 = SubResource("QuadMesh_sokpl")
+
 [node name="Camera" type="Camera3D" parent="Player/Container/Viewport"]
 cull_mask = 2
 
-[node name="Pistol" type="MeshInstance3D" parent="Player/Container/Viewport"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.2, -0.35, -0.4)
-layers = 2
-mesh = ExtResource("7_k8hgv")
+[node name="Crosshair" type="Sprite2D" parent="Player/Container"]
+position = Vector2(320, 192)
+texture = ExtResource("9_qge6k")
 
 [node name="Crowd" type="AudioStreamPlayer" parent="."]
 stream = ExtResource("4_4y05e")
@@ -165,3 +281,9 @@ material = SubResource("FogMaterial_ljl5b")
 transform = Transform3D(-4.37114e-08, 1, 0, -1, -4.37114e-08, 0, 0, 0, 1, 53, 41, 0)
 size = Vector3(128, 2, 128)
 material = SubResource("FogMaterial_ljl5b")
+
+[node name="Table-large" type="MeshInstance3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 2)
+mesh = ExtResource("9_2jpgg")
+
+[connection signal="timeout" from="Player/Container/Viewport/Weapon/Pistol/Timer" to="Player/Container/Viewport/Weapon/Pistol" method="_on_timer_timeout"]
